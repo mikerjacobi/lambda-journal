@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  handle_twilio_webhook: { ports: ['4000:80'], entrypoint: /bin/handle_twilio_webhook, image: debian, env_file: ["configs/sandbox.env"], networks: ['webnet'], volumes: ['./server/bin:/bin', '/etc/ssl/certs:/etc/ssl/certs:ro'], depends_on: ['dynamodb']}
+
+  dynamodb:
+    image: amazon/dynamodb-local
+    ports:
+      - '8000:8000'
+    #command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+
+networks:
+  webnet:
+

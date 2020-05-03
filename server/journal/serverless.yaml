@@ -1,0 +1,41 @@
+---
+service: journal-api
+frameworkVersion: ">=1.28.0 <2.0.0"
+
+plugins:
+  - serverless-dynamodb-local
+provider:
+  name: aws
+  runtime: go1.x
+  stage: production
+  versionFunctions: false
+  timeout: 6 
+  memorySize: 128 
+  region: us-west-2
+
+  vpc:
+    securityGroupIds:
+      - ${env:BRICKJONES_DEFAULT_SECURITY_GROUP_ID}
+    subnetIds:
+      - ${env:BRICKJONES_SUBNET_ID_2}
+
+package:
+  individually: true
+
+functions:
+  handle_twilio_webhook:
+    handler: bin/handle_twilio_webhook
+    package: {artifact: bin/handle_twilio_webhook.zip}
+    events:
+      - http:
+          path: twilio
+          method: post
+          cors: true
+
+#custom:
+#  customDomain:
+#    domainName: journal.jaqobi.com
+#    basePath: api
+#    stage: production
+#    createRoute53Record: true
+#    certificateArn: ""

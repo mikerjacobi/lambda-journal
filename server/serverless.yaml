@@ -1,0 +1,50 @@
+---
+service: journal-app
+frameworkVersion: ">=1.28.0 <2.0.0"
+
+plugins:
+  - serverless-dynamodb-local
+provider:
+  name: aws
+  runtime: go1.x
+  region: us-west-2
+functions:
+
+resources: # CloudFormation template syntax
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: usersTable
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+  #vpc:
+    #securityGroupIds:
+    #  - ${env:BRICKJONES_DEFAULT_SECURITY_GROUP_ID}
+    #subnetIds:
+    #  - ${env:BRICKJONES_SUBNET_ID_2}
+
+custom:
+  dynamodb:
+  # If you only want to use DynamoDB Local in some stages, declare them here
+    stages:
+      - dev
+    start:
+      host: dynamodb # or the name of your Dynamo docker container
+      port: "8000" # the port of our Dynamo docker container
+      noStart: true
+      migrate: true
+
+#  customDomain:
+#    domainName: journal.jaqobi.com
+#    basePath: api
+#    stage: production
+#    createRoute53Record: true
+#    certificateArn: ""
