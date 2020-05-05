@@ -1,5 +1,6 @@
 node_modules
-server/bin/*
+server/journal/bin/*
 configs
 test/.venv
 test/features/steps/__pycache__
+.serverless

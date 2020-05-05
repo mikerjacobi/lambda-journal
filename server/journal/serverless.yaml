@@ -9,22 +9,22 @@ provider:
   runtime: go1.x
   stage: production
   versionFunctions: false
-  timeout: 6 
-  memorySize: 128 
+  timeout: 6
+  memorySize: 128
   region: us-west-2
 
-  #vpc:
-  #  securityGroupIds:
-  #    - ${env:BRICKJONES_DEFAULT_SECURITY_GROUP_ID}
-  #  subnetIds:
-  #    - ${env:BRICKJONES_SUBNET_ID_2}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Resource: "*"
+      Action:
+        - "dynamodb:*"
 
 package:
   individually: true
 
 functions:
   handle_twilio_webhook:
-    handler: bin/handle_twilio_webhook
+    handler: /handle_twilio_webhook
     package: {artifact: bin/handle_twilio_webhook.zip}
     events:
       - http:
@@ -33,7 +33,7 @@ functions:
           cors: true
 
   insert_entry:
-    handler: bin/insert_entry
+    handler: /insert_entry
     package: {artifact: bin/insert_entry.zip}
     events:
       - http:
@@ -42,18 +42,10 @@ functions:
           cors: true
 
   get_entry:
-    handler: bin/get_entry
+    handler: /get_entry
     package: {artifact: bin/get_entry.zip}
     events:
       - http:
           path: entry/{entry_id}
           method: get
           cors: true
-
-#custom:
-#  customDomain:
-#    domainName: journal.jaqobi.com
-#    basePath: api
-#    stage: production
-#    createRoute53Record: true
-#    certificateArn: ""
