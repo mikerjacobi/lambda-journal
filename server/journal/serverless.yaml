@@ -32,20 +32,20 @@ functions:
           method: post
           cors: true
 
-  insert_entry:
-    handler: /insert_entry
-    package: {artifact: bin/insert_entry.zip}
+  insert_journal:
+    handler: /insert_journal
+    package: {artifact: bin/insert_journal.zip}
     events:
       - http:
-          path: entry
+          path: journal
           method: post
           cors: true
 
-  get_entry:
-    handler: /get_entry
-    package: {artifact: bin/get_entry.zip}
+  get_journal:
+    handler: /get_journal
+    package: {artifact: bin/get_journal.zip}
     events:
       - http:
-          path: entry/{entry_id}
+          path: journal/{journal_id}
           method: get
           cors: true

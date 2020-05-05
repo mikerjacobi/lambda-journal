@@ -125,7 +125,7 @@ func Response(ctx context.Context, code int, responsePayload interface{}) *event
 }
 
 func GetResource(resourceID string) (string, error) {
-	split := strings.Split(resourceID, "_")
+	split := strings.Split(resourceID, ":")
 	if len(split) != 2 {
 		return "", fmt.Errorf("invalid resource format: %s", resourceID)
 	}

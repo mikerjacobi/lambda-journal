@@ -26,13 +26,13 @@ func (c controller) handleTwilioWebhook(ctx context.Context, req *events.APIGate
 	lf := logrus.Fields{"handler": c.Service}
 	ctx = common.WithContentType(ctx, "text/xml")
 
-	entry, err := c.validate(ctx, req)
+	journal, err := c.validate(ctx, req)
 	if err != nil {
-		logrus.WithError(err).Error("failed to validate entry")
+		logrus.WithError(err).Error("failed to validate journal")
 		return common.Response(ctx, http.StatusOK, nil), nil
 	}
 
-	if _, err := c.DynamoDB.PutItem(entry.PutItem()); err != nil {
+	if _, err := c.DynamoDB.PutItem(journal.PutItem()); err != nil {
 		logrus.WithError(err).Error("failed to put item")
 		return common.Response(ctx, http.StatusOK, nil), nil
 	}
@@ -46,11 +46,11 @@ type TwilioInboundReq struct {
 	Body string `schema:"Body"`
 }
 
-func (c controller) validate(ctx context.Context, req *events.APIGatewayProxyRequest) (journal.Entry, error) {
-	e := journal.Entry{
-		EntryID: "entry_" + uuid.New().String(),
-		Created: time.Now().Format(time.RFC3339),
-		Updated: time.Now().Format(time.RFC3339),
+func (c controller) validate(ctx context.Context, req *events.APIGatewayProxyRequest) (journal.Journal, error) {
+	e := journal.Journal{
+		JournalID: "journal:" + uuid.New().String(),
+		Created:   time.Now().Format(time.RFC3339),
+		Updated:   time.Now().Format(time.RFC3339),
 	}
 	params, err := url.ParseQuery(req.Body)
 	if err != nil {

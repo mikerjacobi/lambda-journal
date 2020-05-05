@@ -9,45 +9,32 @@ provider:
   runtime: go1.x
   region: us-west-2
 
-  environment: 
+  environment:
     AWS_ACCESS_KEY_ID: DEFAULT_ACCESS_KEY
     AWS_SECRET_ACCESS_KEY: DEFAULT_SECRET
 
-resources: # CloudFormation template syntax
+resources:  # CloudFormation template syntax
   Resources:
-    entries:
+    journal:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: entries
+        TableName: journal
         AttributeDefinitions:
-          - AttributeName: entry_id
+          - AttributeName: journal_id
             AttributeType: S
         KeySchema:
-          - AttributeName: entry_id
+          - AttributeName: journal_id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-  #vpc:
-    #securityGroupIds:
-    #  - ${env:BRICKJONES_DEFAULT_SECURITY_GROUP_ID}
-    #subnetIds:
-    #  - ${env:BRICKJONES_SUBNET_ID_2}
 
 custom:
   dynamodb:
-  # If you only want to use DynamoDB Local in some stages, declare them here
     stages:
       - dev
     start:
-      host: localhost # or the name of your Dynamo docker container
-      port: "8000" # the port of our Dynamo docker container
+      host: localhost  # or the name of your Dynamo docker container
+      port: "8000"  # the port of our Dynamo docker container
       noStart: true
       migrate: true
-
-#  customDomain:
-#    domainName: journal.jaqobi.com
-#    basePath: api
-#    stage: production
-#    createRoute53Record: true
-#    certificateArn: ""

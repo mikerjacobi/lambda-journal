@@ -5,43 +5,43 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
-type Entry struct {
-	EntryID string `json:"entry_id"`
-	Entry   string `json:"entry"`
-	Created string `json:"created"`
-	Updated string `json:"updated"`
+type Journal struct {
+	JournalID string `json:"journal_id"`
+	Entry     string `json:"entry"`
+	Created   string `json:"created"`
+	Updated   string `json:"updated"`
 }
 
-func (e Entry) GetItem() *dynamodb.GetItemInput {
+func (j Journal) GetItem() *dynamodb.GetItemInput {
 	return &dynamodb.GetItemInput{
-		TableName: aws.String("entries"),
+		TableName: aws.String("journal"),
 		Key: map[string]*dynamodb.AttributeValue{
-			"entry_id": {S: aws.String(e.EntryID)},
+			"journal_id": {S: aws.String(j.JournalID)},
 		},
 	}
 }
 
-func (e Entry) GotItem(item *dynamodb.GetItemOutput) Entry {
-	if itemEntry, ok := item.Item["entry"]; ok {
-		e.Entry = *itemEntry.S
+func (j Journal) GotItem(item *dynamodb.GetItemOutput) Journal {
+	if attr, ok := item.Item["entry"]; ok {
+		j.Entry = *attr.S
 	}
-	if itemEntry, ok := item.Item["created"]; ok {
-		e.Created = *itemEntry.S
+	if attr, ok := item.Item["created"]; ok {
+		j.Created = *attr.S
 	}
-	if itemEntry, ok := item.Item["updated"]; ok {
-		e.Updated = *itemEntry.S
+	if attr, ok := item.Item["updated"]; ok {
+		j.Updated = *attr.S
 	}
-	return e
+	return j
 }
 
-func (e Entry) PutItem() *dynamodb.PutItemInput {
+func (j Journal) PutItem() *dynamodb.PutItemInput {
 	return &dynamodb.PutItemInput{
-		TableName: aws.String("entries"),
+		TableName: aws.String("journal"),
 		Item: map[string]*dynamodb.AttributeValue{
-			"entry_id": {S: aws.String(e.EntryID)},
-			"entry":    {S: aws.String(e.Entry)},
-			"created":  {S: aws.String(e.Created)},
-			"updated":  {S: aws.String(e.Updated)},
+			"journal_id": {S: aws.String(j.JournalID)},
+			"entry":      {S: aws.String(j.Entry)},
+			"created":    {S: aws.String(j.Created)},
+			"updated":    {S: aws.String(j.Updated)},
 		},
 	}
 }

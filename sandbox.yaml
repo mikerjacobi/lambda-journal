@@ -2,8 +2,8 @@ version: "3.7"
 
 services:
   handle_twilio_webhook: { ports: ['4000:80'], entrypoint: /bin/handle_twilio_webhook, image: debian, env_file: ["configs/sandbox.env"], networks: ['webnet'], volumes: ['./server/journal/bin:/bin', '/etc/ssl/certs:/etc/ssl/certs:ro'], depends_on: ['dynamodb']}
-  insert_entry: { ports: ['4001:80'], entrypoint: /bin/insert_entry, image: debian, env_file: ["configs/sandbox.env"], networks: ['webnet'], volumes: ['./server/journal/bin:/bin', '/etc/ssl/certs:/etc/ssl/certs:ro'], depends_on: ['dynamodb']}
-  get_entry: { ports: ['4002:80'], entrypoint: /bin/get_entry, image: debian, env_file: ["configs/sandbox.env"], networks: ['webnet'], volumes: ['./server/journal/bin:/bin', '/etc/ssl/certs:/etc/ssl/certs:ro'], depends_on: ['dynamodb']}
+  insert_journal: { ports: ['4001:80'], entrypoint: /bin/insert_journal, image: debian, env_file: ["configs/sandbox.env"], networks: ['webnet'], volumes: ['./server/journal/bin:/bin', '/etc/ssl/certs:/etc/ssl/certs:ro'], depends_on: ['dynamodb']}
+  get_journal: { ports: ['4002:80'], entrypoint: /bin/get_journal, image: debian, env_file: ["configs/sandbox.env"], networks: ['webnet'], volumes: ['./server/journal/bin:/bin', '/etc/ssl/certs:/etc/ssl/certs:ro'], depends_on: ['dynamodb']}
 
   dynamodb:
     image: amazon/dynamodb-local
