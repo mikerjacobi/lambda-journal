@@ -102,9 +102,12 @@ func (c Controller) SandboxHandler(rw http.ResponseWriter, r *http.Request) {
 
 //Response constructor for api gateway response
 func Response(ctx context.Context, code int, responsePayload interface{}) *events.APIGatewayProxyResponse {
-
+	contentType := "application/json"
+	if ct, ok := ctx.Value(ctxContentType).(string); ok {
+		contentType = ct
+	}
 	headers := map[string]string{
-		"Content-Type":                     "application/json",
+		"Content-Type":                     contentType,
 		"Access-Control-Allow-Origin":      "*",
 		"Access-Control-Allow-Credentials": "true",
 	}

@@ -24,10 +24,12 @@ type controller struct {
 
 func (c controller) handleTwilioWebhook(ctx context.Context, req *events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	lf := logrus.Fields{"handler": c.Service}
+	ctx = common.WithContentType(ctx, "text/xml")
+
 	entry, err := c.validate(ctx, req)
 	if err != nil {
 		logrus.WithError(err).Error("failed to validate entry")
-		return common.Response(ctx, http.StatusBadRequest, nil), nil
+		return common.Response(ctx, http.StatusOK, nil), nil
 	}
 
 	if _, err := c.DynamoDB.PutItem(entry.PutItem()); err != nil {
@@ -36,7 +38,7 @@ func (c controller) handleTwilioWebhook(ctx context.Context, req *events.APIGate
 	}
 
 	logrus.WithFields(lf).Infof("successfully handled twilio webhook")
-	return common.Response(ctx, http.StatusOK, entry), nil
+	return common.Response(ctx, http.StatusOK, ""), nil
 }
 
 type TwilioInboundReq struct {
@@ -50,19 +52,16 @@ func (c controller) validate(ctx context.Context, req *events.APIGatewayProxyReq
 		Created: time.Now().Format(time.RFC3339),
 		Updated: time.Now().Format(time.RFC3339),
 	}
-	logrus.Infof("REQBODY %s", req.Body)
 	params, err := url.ParseQuery(req.Body)
 	if err != nil {
 		return e, errors.Wrap(err, "failed to parse query")
 	}
-	logrus.Infof("params %+v", params)
 	payload := TwilioInboundReq{}
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
 	if err := decoder.Decode(&payload, params); err != nil {
 		return e, errors.Wrap(err, "failed to decode twilio payload")
 	}
-	logrus.Infof("payload %+v", payload)
 	e.Entry = payload.Body
 	return e, nil
 }
