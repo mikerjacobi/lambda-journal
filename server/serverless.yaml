@@ -8,19 +8,22 @@ provider:
   name: aws
   runtime: go1.x
   region: us-west-2
-functions:
+
+  environment: 
+    AWS_ACCESS_KEY_ID: DEFAULT_ACCESS_KEY
+    AWS_SECRET_ACCESS_KEY: DEFAULT_SECRET
 
 resources: # CloudFormation template syntax
   Resources:
-    usersTable:
+    entries:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: usersTable
+        TableName: entries
         AttributeDefinitions:
-          - AttributeName: email
+          - AttributeName: entry_id
             AttributeType: S
         KeySchema:
-          - AttributeName: email
+          - AttributeName: entry_id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -37,7 +40,7 @@ custom:
     stages:
       - dev
     start:
-      host: dynamodb # or the name of your Dynamo docker container
+      host: localhost # or the name of your Dynamo docker container
       port: "8000" # the port of our Dynamo docker container
       noStart: true
       migrate: true

@@ -13,11 +13,11 @@ provider:
   memorySize: 128 
   region: us-west-2
 
-  vpc:
-    securityGroupIds:
-      - ${env:BRICKJONES_DEFAULT_SECURITY_GROUP_ID}
-    subnetIds:
-      - ${env:BRICKJONES_SUBNET_ID_2}
+  #vpc:
+  #  securityGroupIds:
+  #    - ${env:BRICKJONES_DEFAULT_SECURITY_GROUP_ID}
+  #  subnetIds:
+  #    - ${env:BRICKJONES_SUBNET_ID_2}
 
 package:
   individually: true
@@ -30,6 +30,24 @@ functions:
       - http:
           path: twilio
           method: post
+          cors: true
+
+  insert_entry:
+    handler: bin/insert_entry
+    package: {artifact: bin/insert_entry.zip}
+    events:
+      - http:
+          path: entry
+          method: post
+          cors: true
+
+  get_entry:
+    handler: bin/get_entry
+    package: {artifact: bin/get_entry.zip}
+    events:
+      - http:
+          path: entry/{entry_id}
+          method: get
           cors: true
 
 #custom:
